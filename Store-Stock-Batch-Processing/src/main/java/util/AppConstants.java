@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class PipelineUtils {
+public class AppConstants {
 
 
     public static final String GLOBAL_DB_NAME = "CENTRALIZED_GLOBAL_WAREHOUSE";
@@ -44,6 +44,17 @@ public class PipelineUtils {
             "`OPENING_STOCK`,`RECEIPTS`,`ISSUES`,`UNIT_VALUE`)\n" +
             "VALUES\n" +
             "(?,?,?,?,?,?,?)";
+
+    public static final String GET_DATA_BOUNDS_SQL = "" +
+            "SELECT min(ID) as MIN_ID ,max(ID) as MAX_ID " +
+            "FROM 'dbName'.item_stock " +
+            "WHERE STOCK_DATE BETWEEN ";
+
+    public static final String GET_STOCK_DATA_SQL =  "" +
+            "SELECT ID, date_format(STOCK_DATE,'%Y-%m-%d') as STOCK_DATE," +
+            "WAREHOUSE_ID, ITEM_NAME, OPENING_STOCK, RECEIPTS, ISSUES, UNIT_VALUE " +
+            "FROM 'dbName'.item_stock " +
+            "WHERE STOCK_DATE BETWEEN";
 
     public static Properties props = new Properties();
     /**

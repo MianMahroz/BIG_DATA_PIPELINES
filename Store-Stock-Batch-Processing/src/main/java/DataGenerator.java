@@ -1,4 +1,4 @@
-import util.PipelineUtils;
+import util.AppConstants;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
-import static util.PipelineUtils.*;
+import static util.AppConstants.*;
 
 /**
  * This class is responsible to generate raw data for local warehouses
@@ -20,15 +20,16 @@ public class DataGenerator {
 
    static Connection warehouseConn = null;
 
-    private static void openMariaDbConnection(String dbName) throws SQLException, ClassNotFoundException {
+    public static Connection openMariaDbConnection(String dbName) throws SQLException, ClassNotFoundException {
        String db_url= props.get("db.url").toString()+dbName;
        String db_user = props.get("db.user").toString();
        String db_pass= props.get("db.pass").toString();
        Class.forName("org.mariadb.jdbc.Driver");
        warehouseConn = DriverManager.getConnection(db_url,db_user,db_pass);
+       return warehouseConn;
     }
 
-    private static void closeDbConnection() throws SQLException {
+    public static void closeDbConnection() throws SQLException {
         warehouseConn.close();
     }
 
@@ -57,7 +58,7 @@ public class DataGenerator {
         var resultSet= warehouseConn.getMetaData().getCatalogs();
         var schemaList = new ArrayList<String>();
         while (resultSet.next()){
-            schemaList.add(resultSet.getString(1)); // column index 1 is schema name, index 0 probably be ID
+            schemaList.add(resultSet.getString(1)); // column index 1 is schema name
         }
 
         // checking if db already exist
@@ -139,7 +140,7 @@ public class DataGenerator {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
         // setting up application properties
-        PipelineUtils.setUpConfig();
+        AppConstants.setUpConfig();
 
         // opening db connection for db operations
         openMariaDbConnection("mysql");
