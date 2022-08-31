@@ -1,17 +1,22 @@
 import util.PipelineUtils;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Properties;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Random;
+
 import static util.PipelineUtils.*;
 
 /**
  * This class is responsible to generate raw data for local warehouses
  * So we can use it later in Data pipelines
  */
-public class RawWarehouseDataGenerator {
+public class DataGenerator {
 
    static Connection warehouseConn = null;
 
@@ -30,14 +35,20 @@ public class RawWarehouseDataGenerator {
     private static void setUpWareHouses() throws SQLException {
 
         // local warehouses
-        createWarehouseDbIfNotExist("NEW_YORK_WAREHOUSE");
+        createWarehouseDbIfNotExist("GERMANY_WAREHOUSE");
         createWarehouseDbIfNotExist("LONDON_WAREHOUSE");
         createWarehouseDbIfNotExist("ENGLAND_WAREHOUSE");
-
 
         // centralized global warehouse
         createWarehouseDbIfNotExist(GLOBAL_DB_NAME);
 
+        /**
+         * add stock to warehouses
+         * Un-comment below to add raw stock data to each store
+         */
+//        addStockToWareHouse("GERMANY_WAREHOUSE");
+//        addStockToWareHouse("LONDON_WAREHOUSE");
+//        addStockToWareHouse("ENGLAND_WAREHOUSE");
     }
 
     private static void createWarehouseDbIfNotExist(String dbName) throws SQLException {
@@ -84,8 +95,44 @@ public class RawWarehouseDataGenerator {
 
     }
 
-    private void writeToWareHouse(){
+    private static void addStockToWareHouse(String dbName) throws SQLException {
+        var stmt = warehouseConn.prepareStatement(INSERT_TO_TABLE_SQL.replace("dbName",dbName));
 
+        //get raw list of stock items and values
+        Map<String,Double> itemValues =  getRawStockItems();
+
+        //Define a random number generator
+        Random random = new Random();
+
+        //Set local date
+        LocalDate startDate = LocalDate.of(2022,10,9);
+        for(int i=0;i < 3;i++) {
+
+            Iterator<String> itemIterator = itemValues.keySet().iterator();
+            while (itemIterator.hasNext()) {
+
+                //Set values
+                LocalDate stockDate = startDate.plusDays(i);
+                String item = itemIterator.next();
+                Double unitValue = itemValues.get(item);
+                int openingStock = random.nextInt(100);
+                int receipts = random.nextInt(50);
+                int issues = random.nextInt(openingStock + receipts);
+
+                stmt.setDate(1, Date.valueOf(stockDate));
+                stmt.setString(2, dbName.split("_")[0]);
+                stmt.setString(3, item);
+                stmt.setInt(4, openingStock);
+                stmt.setInt(5, receipts);
+                stmt.setInt(6, issues);
+                stmt.setDouble(7, unitValue);
+
+                System.out.println("Adding Record :"
+                        + stmt.toString().replace("\n"," "));
+
+                stmt.executeUpdate();
+            }
+        }
     }
 
 
