@@ -27,10 +27,17 @@ public class DataUploader {
         setUpConfig();
 
 
+        /**
+         *  From local warehouse db , transferring data to file system (/raw_data)
+         *  This file system can be could hadoop or s3 but for this example we use local file systems
+         *
+         *  You need to repeat below code for other warehouses as well
+         */
         var dbName = "GERMANY_WAREHOUSE";
         var startDate = "2022-10-09";
         var endDate = "2022-10-10";
 
+        // GERMANY WARE HOUSE
         var dataFrame =  sparkReadFromDb(dbName,
                  props , GET_STOCK_DATA_SQL.replace("dbName",dbName)+"'" +  startDate + "' AND '" + endDate + "' ",
                 DataReader.getDataBoundaries(dbName,startDate, endDate),
@@ -38,6 +45,31 @@ public class DataUploader {
 
 
         sparkWriteToFileSystem(dbName,dataFrame);
+
+        // ENGLAND warehouse
+         dbName = "ENGLAND_WAREHOUSE";
+         var englandDataFrame =  sparkReadFromDb(dbName,
+                props , GET_STOCK_DATA_SQL.replace("dbName",dbName)+"'" +  startDate + "' AND '" + endDate + "' ",
+                DataReader.getDataBoundaries(dbName,startDate, endDate),
+                "2","ID");
+
+
+        sparkWriteToFileSystem(dbName,englandDataFrame);
+
+        // LONDON warehouse
+        dbName = "LONDON_WAREHOUSE";
+        var londonDataFrame =  sparkReadFromDb(dbName,
+                props , GET_STOCK_DATA_SQL.replace("dbName",dbName)+"'" +  startDate + "' AND '" + endDate + "' ",
+                DataReader.getDataBoundaries(dbName,startDate, endDate),
+                "2","ID");
+
+
+        sparkWriteToFileSystem(dbName,londonDataFrame);
+
+
+
+
+        closeSparkSession();
 
 
 

@@ -89,7 +89,7 @@ public class BigDataUtils {
 
     }
 
-    private static void closeSparkSession(){
+    public static void closeSparkSession(){
         spark.close();
     }
 }
