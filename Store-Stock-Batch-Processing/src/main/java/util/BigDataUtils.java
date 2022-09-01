@@ -27,6 +27,9 @@ public class BigDataUtils {
                 .config("spark.sql.shuffle.partitions", 2)
                 .config("spark.default.parallelism", 2)
                 .config("spark.sql.streaming.forceDeleteTempCheckpointLocation", true)
+                .config("spark.eventLog.enabled", true)
+                .config("spark.rdd.compress", "true")
+                .config("spark.streaming.backpressure.enabled", "true")
                 .config("spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version","2")
                 .appName("StockDailyUploaderJob")
                 .getOrCreate();
@@ -44,10 +47,11 @@ public class BigDataUtils {
      */
     public static Dataset<Row> sparkReadFromDb(String dbName,Properties props, String sqlQuery, DataBoundaryDto boundary, String partitionCount, String partitionColumn){
 
+        System.out.println("SPARK READING FROM DB "+sqlQuery);
         Dataset<Row> dataFrame
                 = spark.read()
                 .format("jdbc")
-                .option("url", props.getProperty("db.url")+dbName)
+                .option("url", props.getProperty("db.mysqlUrl")+dbName) // using db.mysqlUrl buz maria driver has issues
                 .option("dbtable", "( " + sqlQuery + " ) as tmpStock")
                 .option("user", props.getProperty("db.user"))
                 .option("password", props.getProperty("db.pass"))
@@ -63,6 +67,8 @@ public class BigDataUtils {
 
                 .option("numPartitions",partitionCount)
                 .load();
+
+                dataFrame.logicalPlan();
 
         System.out.println("Total size of Stock DF : " + dataFrame.count());
         dataFrame.show();

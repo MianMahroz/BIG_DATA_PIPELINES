@@ -28,12 +28,16 @@ public class DataUploader {
 
 
         var dbName = "GERMANY_WAREHOUSE";
+        var startDate = "2022-10-09";
+        var endDate = "2022-10-10";
+
         var dataFrame =  sparkReadFromDb(dbName,
-                 props , GET_STOCK_DATA_SQL,
-                DataReader.getDataBoundaries(dbName,"2021-06-01", "2021-06-03"),
+                 props , GET_STOCK_DATA_SQL.replace("dbName",dbName)+"'" +  startDate + "' AND '" + endDate + "' ",
+                DataReader.getDataBoundaries(dbName,startDate, endDate),
                 "2","ID");
 
-        sparkWriteToFileSystem(dbName,dataFrame);
+
+//        sparkWriteToFileSystem(dbName,dataFrame);
 
 
 

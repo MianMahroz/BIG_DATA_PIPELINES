@@ -20,7 +20,9 @@ public class DataReader {
         // Opening db connection for particular warehouse to upload its data to centralized server
         var conn= DataGenerator.openMariaDbConnection(dbName);
 
-        var stmt= conn.prepareStatement(GET_DATA_BOUNDS_SQL.replace("dbName",dbName)+"'" +  startDate + "' AND '" + endDate + "' ");
+        String sql =GET_DATA_BOUNDS_SQL.replace("dbName",dbName)+"'" +  startDate + "' AND '" + endDate + "' ";
+        System.out.println("SQL: "+sql);
+        var stmt= conn.prepareStatement(sql);
         ResultSet resultSet =  stmt.executeQuery();
 
         // fetching first and last id value to calculate , how many record we need to process
