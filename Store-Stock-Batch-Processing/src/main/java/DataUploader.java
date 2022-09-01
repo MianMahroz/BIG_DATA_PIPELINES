@@ -37,7 +37,7 @@ public class DataUploader {
                 "2","ID");
 
 
-//        sparkWriteToFileSystem(dbName,dataFrame);
+        sparkWriteToFileSystem(dbName,dataFrame);
 
 
 
