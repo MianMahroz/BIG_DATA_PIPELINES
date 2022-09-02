@@ -10,7 +10,7 @@ import java.sql.SQLException;
  * and save it to some file systems (hadoop,s3 or local file systems) in parquet format
  *
  * For this project we're going to read local warehouse data from maria db and save to local file system for further processing
- * Instead of local file system , you can also save data to hadoop, s3 etc.
+ * Instead of local file system(raw_data) , you can also save data to hadoop, s3 etc.
  */
 public class DataUploader {
 
