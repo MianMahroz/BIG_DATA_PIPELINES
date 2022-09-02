@@ -45,7 +45,7 @@ object DataUploader {
 
 
     // SAVE RDD DATA to local file system
-//    sparkUtil.sparkWriteToFileSystem(jobsDbName,"status",dataset)
+    sparkUtil.sparkWriteToFileSystem(jobsDbName,"status",dataset)
     println("WRITE TO LOCAL FILE SYSTEM COMPLETED!")
 
 

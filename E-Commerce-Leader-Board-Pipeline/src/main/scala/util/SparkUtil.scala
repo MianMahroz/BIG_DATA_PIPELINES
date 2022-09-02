@@ -25,7 +25,7 @@ class SparkUtil {
       .config("spark.sql.shuffle.partitions", 2)
       .config("spark.default.parallelism", 2)
       .config("spark.sql.streaming.forceDeleteTempCheckpointLocation", true)
-//      .config("spark.eventLog.enabled", true)
+      .config("spark.eventLog.enabled", true)
       .config("spark.rdd.compress", "true")
       .config("spark.streaming.backpressure.enabled", "true")
       .config("spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version", "2")
