@@ -12,7 +12,7 @@ import java.util.Properties;
  */
 public class BigDataUtils {
 
-    static SparkSession spark = null;
+    public static SparkSession spark = null;
 
     /**
      * Creates new Spark session
@@ -68,8 +68,6 @@ public class BigDataUtils {
                 .option("numPartitions",partitionCount)
                 .load();
 
-                dataFrame.logicalPlan();
-
         System.out.println("Total size of Stock DF : " + dataFrame.count());
         dataFrame.show();
 
@@ -92,4 +90,48 @@ public class BigDataUtils {
     public static void closeSparkSession(){
         spark.close();
     }
+
+
+    public static  Dataset<Row> sparkReadFromFile(String dbName,String sourceDir){
+        Dataset<Row> dataset = spark.read().parquet(sourceDir);
+        return dataset;
+    }
+
+    public static Dataset<Row> sparkAggregateData(String tableName){
+        Dataset<Row> stockSummary
+                = spark.sql(
+                "SELECT STOCK_DATE, ITEM_NAME, " +
+                        "COUNT(*) as TOTAL_REC," +
+                        "SUM(OPENING_STOCK) as OPENING_STOCK, " +
+                        "SUM(RECEIPTS) as RECEIPTS, " +
+                        "SUM(ISSUES) as ISSUES, " +
+                        "SUM( OPENING_STOCK + RECEIPTS - ISSUES) as CLOSING_STOCK, "+
+                        "SUM( (OPENING_STOCK + RECEIPTS - ISSUES) * UNIT_VALUE ) as CLOSING_VALUE " +
+                        "FROM  "+tableName +
+                        " GROUP BY STOCK_DATE, ITEM_NAME"
+        );
+
+        System.out.println("Global Stock Summary: ");
+        stockSummary.show();
+
+        return stockSummary;
+
+    }
+
+    public static void sparkWriteToDb(String dbName,Dataset<Row> stockSummary,Properties props){
+        //Append to the MariaDB table. Will add duplicate rows if run again
+        stockSummary
+                .write()
+                .mode(SaveMode.Append)
+                .format("jdbc")
+                //Using mysql since there is a bug in mariadb connector
+                //https://issues.apache.org/jira/browse/SPARK-25013
+                .option("url", props.getProperty("db.mysqlUrl")+dbName) // using db.mysqlUrl buz maria driver has issues
+                .option("dbtable", dbName+".item_stock")
+                .option("user", props.getProperty("db.user"))
+                .option("password", props.getProperty("db.pass"))
+                .save();
+
+    }
+
 }

@@ -1,12 +1,11 @@
 package util;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public class AppConstants {
 
 
+    public static final List<String> AVAILABLE_WAREHOUSES = Arrays.asList("GERMANY_WAREHOUSE","ENGLAND_WAREHOUSE","LONDON_WAREHOUSE");
     public static final String GLOBAL_DB_NAME = "CENTRALIZED_GLOBAL_WAREHOUSE";
     public static final String CREATE_DB_SQL = "CREATE DATABASE ";
     public static final String CREATE_TABLE_SQL = "" +
@@ -96,4 +95,29 @@ public class AppConstants {
 
         return itemValues;
     }
+
+    public static String getCountQuery(String dbName){
+        var sql = ""+
+                "SELECT " +
+                "COUNT(*) as TOTAL_REC," +
+//                        "SUM(OPENING_STOCK) as OPENING_STOCK, " +
+//                        "SUM(RECEIPTS) as RECEIPTS, " +
+//                        "SUM(ISSUES) as ISSUES, " +
+//                        "SUM( OPENING_STOCK + RECEIPTS - ISSUES) as CLOSING_STOCK, "+
+//                        "SUM( (OPENING_STOCK + RECEIPTS - ISSUES) * UNIT_VALUE ) as CLOSING_VALUE " +
+                "FROM  "+dbName +
+                "GROUP BY STOCK_DATE, ITEM_NAME";
+        return sql;
+    }
+
+    public static String getSumQuery(String dbName){
+        var sql = ""+
+                "SELECT " +
+                "SUM(OPENING_STOCK) as OPENING_STOCK, " +
+                "FROM  "+dbName +
+                "GROUP BY STOCK_DATE, ITEM_NAME";
+        return sql;
+    }
+
+
 }
