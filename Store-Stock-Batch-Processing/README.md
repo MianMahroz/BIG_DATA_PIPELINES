@@ -21,6 +21,9 @@ For windows user`s only:
 * Please download it from below url and paste all content to C:/hadoop/bin
 * You also need to paste winutil files to C:/windows/system32
 
+#### note: D:/tmp/spark-events/    :plz make sure you have this directory as spark uses this to store event logs 
+#### or if you don`t want the event logs then just remove this property from session config :  ".config("spark.eventLog.enabled", true)"
+
 ![image](https://user-images.githubusercontent.com/28490692/188035250-360fc1b0-4674-46c7-a719-b59ce1f157b6.png)
 
 
