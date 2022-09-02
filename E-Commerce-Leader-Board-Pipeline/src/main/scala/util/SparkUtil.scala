@@ -80,16 +80,26 @@ class SparkUtil {
   }
 
 
-  def sparkReadFromFile(dbName: String, sourceDir: String): Dataset[Row] = {
+  def sparkReadFromFile(sourceDir: String): Dataset[Row] = {
     val dataset: Dataset[Row] = spark.read.parquet(sourceDir)
     return dataset
   }
 
-  def sparkAggregateData(tableName: String): Dataset[Row] = {
-    val stockSummary: Dataset[Row] = spark.sql("SELECT STOCK_DATE, ITEM_NAME, " + "COUNT(*) as TOTAL_REC," + "SUM(OPENING_STOCK) as OPENING_STOCK, " + "SUM(RECEIPTS) as RECEIPTS, " + "SUM(ISSUES) as ISSUES, " + "SUM( OPENING_STOCK + RECEIPTS - ISSUES) as CLOSING_STOCK, " + "SUM( (OPENING_STOCK + RECEIPTS - ISSUES) * UNIT_VALUE ) as CLOSING_VALUE " + "FROM  " + tableName + " GROUP BY STOCK_DATE, ITEM_NAME")
-    System.out.println("Global Stock Summary: ")
-    stockSummary.show()
-    return stockSummary
+  def sparkAggregateJobsData(startDate:String,endDate:String): Dataset[Row] = {
+
+    var sql ="select " +
+      "(Select COUNT(id) from GLOBAL_JOBS_TABLE where status='OPEN' AND created BETWEEN " + "'"+startDate + "' AND '"+endDate + "') as TOTAL_OPEN_JOBS," +
+      "(Select COUNT(id) from GLOBAL_JOBS_TABLE where status='COMPLETED' AND created BETWEEN " + "'"+startDate + "' AND '"+endDate + "') as TOTAL_COMPLETED_JOBS," +
+      "(Select COUNT(id) from GLOBAL_JOBS_TABLE where status='ASSIGNED' AND created BETWEEN " + "'"+startDate + "' AND '"+endDate + "') as TOTAL_ASSIGNED_JOBS," +
+      "(Select COUNT(id) from GLOBAL_JOBS_TABLE where status='DRAFT' AND created BETWEEN " + "'"+startDate + "' AND '"+endDate + "') as TOTAL_DRAFT_JOBS," +
+      "(Select SUM(budget_figure) from GLOBAL_JOBS_TABLE where status='OPEN' AND created BETWEEN " + "'"+startDate + "' AND '"+endDate + "') as TOTAL_OPEN_JOBS_BUDGET," +
+      "(Select SUM(budget_figure) from GLOBAL_JOBS_TABLE where status='COMPLETED' AND created BETWEEN " + "'"+startDate + "' AND '"+endDate + "') as TOTAL_COMPLETED_JOBS_BUDGET," +
+      "(Select SUM(budget_figure) from GLOBAL_JOBS_TABLE where status='ASSIGNED' AND created BETWEEN " + "'"+startDate + "' AND '"+endDate + "') as TOTAL_ASSIGNED_JOBS_BUDGET," +
+      "(Select SUM(budget_figure) from GLOBAL_JOBS_TABLE where status='DRAFT' AND created BETWEEN " + "'"+startDate + "' AND '"+endDate + "') as TOTAL_DRAFT_JOBS_BUDGET" +
+      " from GLOBAL_JOBS_TABLE job limit 1"
+
+    val stockSummary: Dataset[Row] = spark.sql(sql)
+    stockSummary
   }
 
 
