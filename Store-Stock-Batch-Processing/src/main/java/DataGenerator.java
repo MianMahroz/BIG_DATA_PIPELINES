@@ -47,9 +47,9 @@ public class DataGenerator {
          * add stock to warehouses
          * Un-comment below to add raw stock data to each store
          */
-//        addStockToWareHouse("GERMANY_WAREHOUSE");
-//        addStockToWareHouse("LONDON_WAREHOUSE");
-//        addStockToWareHouse("ENGLAND_WAREHOUSE");
+        addStockToWareHouse("GERMANY_WAREHOUSE");
+        addStockToWareHouse("LONDON_WAREHOUSE");
+        addStockToWareHouse("ENGLAND_WAREHOUSE");
     }
 
     private static void createWarehouseDbIfNotExist(String dbName) throws SQLException {
