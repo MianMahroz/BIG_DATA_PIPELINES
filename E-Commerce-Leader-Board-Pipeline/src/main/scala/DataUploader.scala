@@ -36,6 +36,10 @@ object DataUploader {
    val dataBoundaries = clientDbUtil.readJobBoundariesFromDb(startDate,endDate)
 
 
+    //closing Db connection
+    clientDbUtil.closeDbConnection()
+
+
     // read Data from client db and load to spark RDD or Dataset
    var dataset = sparkUtil.sparkReadFromDb(
                             jobsDbName,
@@ -49,6 +53,7 @@ object DataUploader {
     println("WRITE TO LOCAL FILE SYSTEM COMPLETED!")
 
 
+    // closing spark session
     sparkUtil.closeSparkSession()
 
   }

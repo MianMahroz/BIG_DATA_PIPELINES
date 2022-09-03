@@ -4,6 +4,9 @@ import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 
 import java.util.Properties
 
+/**
+ * 
+ */
 class KProducer {
 
 

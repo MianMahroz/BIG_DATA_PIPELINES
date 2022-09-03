@@ -27,8 +27,19 @@ class ClientDbConnectionUtil(appConstants: AppConstants) {
   @throws[SQLException]
   def closeDbConnection(): Unit = {
     clientDbConn.close()
+    println("DB CONNECTION CLOSED!")
   }
 
+  /**
+   * Reading Data boundaries, we need to inform spark that what would be the range of data.
+   * lowerBound is the min of primary key column(ID)
+   * maxBound is the max of primary key column(ID)
+   * totalRecord = maxBound - lowerBound
+   *
+   * @param startDate
+   * @param endDate
+   * @return
+   */
   def readJobBoundariesFromDb(startDate:String,endDate:String): DataBoundaryDto ={
 
 
@@ -42,7 +53,9 @@ class ClientDbConnectionUtil(appConstants: AppConstants) {
        boundDto.maxBound = rs.getInt(2)
     }
 
-    println("DATA BOUNDARIES: "+boundDto.toString)
+    println("Min Bound: "+boundDto.minBound)
+    println("Max Bound: "+boundDto.maxBound)
+
 
     // returning boundDto
     boundDto

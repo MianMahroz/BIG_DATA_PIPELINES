@@ -1,5 +1,12 @@
 import util.{AppConstants, SparkUtil}
 import org.apache.spark.sql.{Dataset, Row}
+
+
+/**
+ * This is responsible to read parquet files that uploader saved at /raw_data
+ * Aggregate the data , generate stats and send to kafka topic for leader board consumer
+ * We can also dump the data on which the stats are generated to maria db if needed.
+ */
 object DataProcessor {
 
   def main(args: Array[String]): Unit = {

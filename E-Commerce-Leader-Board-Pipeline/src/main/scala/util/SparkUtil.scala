@@ -80,6 +80,7 @@ class SparkUtil {
 
   def closeSparkSession(): Unit = {
     spark.close()
+    println("SPARK SESSION CLOSED")
   }
 
 
