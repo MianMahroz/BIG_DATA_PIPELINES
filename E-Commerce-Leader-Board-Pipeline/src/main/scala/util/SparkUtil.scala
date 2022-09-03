@@ -1,5 +1,8 @@
 package util;
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import org.apache.spark.sql.functions.{col, struct, to_json}
 import org.apache.spark.sql.{Dataset, Row, SaveMode, SparkSession}
 
 import java.util.Properties
@@ -96,11 +99,36 @@ class SparkUtil {
       "(Select SUM(budget_figure) from GLOBAL_JOBS_TABLE where status='COMPLETED' AND created BETWEEN " + "'"+startDate + "' AND '"+endDate + "') as TOTAL_COMPLETED_JOBS_BUDGET," +
       "(Select SUM(budget_figure) from GLOBAL_JOBS_TABLE where status='ASSIGNED' AND created BETWEEN " + "'"+startDate + "' AND '"+endDate + "') as TOTAL_ASSIGNED_JOBS_BUDGET," +
       "(Select SUM(budget_figure) from GLOBAL_JOBS_TABLE where status='DRAFT' AND created BETWEEN " + "'"+startDate + "' AND '"+endDate + "') as TOTAL_DRAFT_JOBS_BUDGET" +
+      ", '" +startDate +"' as startDate" +
+      ", '" +endDate +"' as endDate"+
       " from GLOBAL_JOBS_TABLE job limit 1"
 
     val stockSummary: Dataset[Row] = spark.sql(sql)
     stockSummary
   }
+
+  /**
+   * Sending summary data stats to kafka topic, for leader board client
+   * Stats are just one row.
+   * The data on the basis of we generated the stats , if needed we can dump to casandra or maria db
+   * @param topicName
+   * @param dataset
+   * @param props
+   */
+  def sparkWriteToKafkaTopic(topicName: String,dataset: Dataset[Row],props:Properties): Unit = {
+
+    var kProducer = new KProducer();
+
+    var df = dataset
+    .selectExpr("CAST(startDate AS STRING) AS key", "to_json(struct(*)) AS value")
+
+    df.show()
+
+    var key =df.first().get(0).toString
+    var value = df.first().get(1).toString
+    kProducer.sendData(topicName,key,value,props)
+  }
+
 
 
 }

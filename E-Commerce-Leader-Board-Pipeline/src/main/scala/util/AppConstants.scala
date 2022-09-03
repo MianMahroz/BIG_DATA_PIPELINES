@@ -31,10 +31,22 @@ class AppConstants {
    * @return
    */
   def setUpConfig(): Unit = {
-    props.setProperty("db.url", "jdbc:postgresql://yourUrlHere:5432/")
-    props.setProperty("db.user", "user")
-    props.setProperty("db.pass", "pass")
-    props.setProperty("db.jobs", "db")
+    props.setProperty("db.url", "jdbc:postgresql://yourUrl:5432/")
+    props.setProperty("db.user", "youUser")
+    props.setProperty("db.pass", "yourpass")
+    props.setProperty("db.jobs", "dbName")
+
+    // producer props
+    props.put("bootstrap.servers","localhost:9092")
+    props.put("key.serializer","org.apache.kafka.common.serialization.StringSerializer")
+    props.put("value.serializer","org.apache.kafka.common.serialization.StringSerializer")
+
+    /**
+     * in case when custom serializer is defined
+     */
+  //  props.put("value.serializer","dto.JobSummarySerializer")
+
+    props.put("acks","all")
 
   }
 

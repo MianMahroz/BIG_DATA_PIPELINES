@@ -9,8 +9,9 @@ object DataProcessor {
     // prerequisites
     val sparkUtil = new SparkUtil()
     val fileDir = "raw_data/"
-    val startDate = "2020-04-01"
-    val endDate = "2020-04-30"
+    val startDate = "2020-05-01"
+    val endDate = "2020-05-30"
+    val topicName = "jobs-summary";
 
 
     // Setting up props for db access and other operations
@@ -37,6 +38,9 @@ object DataProcessor {
     var summary = sparkUtil.sparkAggregateJobsData(startDate,endDate)
     println("GLOBAL_JOBS_TABLE  Summary: ")
     summary.show()
+
+    // Push Summary Data to a kafka topic , to be consumed by Leader Dashboard client
+    sparkUtil.sparkWriteToKafkaTopic(topicName,summary,appConstants.props)
 
     //closing spark session
     sparkUtil.closeSparkSession()

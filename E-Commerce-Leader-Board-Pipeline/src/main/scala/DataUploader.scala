@@ -18,8 +18,8 @@ object DataUploader {
     appConstants.setUpConfig()
 
     val clientDbUtil = new ClientDbConnectionUtil(appConstants)
-    val startDate = "2020-04-01"
-    val endDate = "2020-04-30"
+    val startDate = "2020-05-01"
+    val endDate = "2020-05-30"
     val jobsDbName = appConstants.props.getProperty("db.jobs");
 
 
