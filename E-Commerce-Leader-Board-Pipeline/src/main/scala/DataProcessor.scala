@@ -48,6 +48,7 @@ object DataProcessor {
 
     // Push Summary Data to a kafka topic , to be consumed by Leader Dashboard client
     sparkUtil.sparkWriteToKafkaTopic(topicName,summary,appConstants.props)
+    println("DATA SUCCESSFULLY SEND TO KAFKA!")
 
     //closing spark session
     sparkUtil.closeSparkSession()
