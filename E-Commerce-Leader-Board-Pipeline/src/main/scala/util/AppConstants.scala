@@ -31,10 +31,10 @@ class AppConstants {
    * @return
    */
   def setUpConfig(): Unit = {
-    props.setProperty("db.url", "jdbc:postgresql://yourUrl:5432/")
-    props.setProperty("db.user", "youUser")
-    props.setProperty("db.pass", "yourpass")
-    props.setProperty("db.jobs", "dbName")
+    props.setProperty("db.url", "jdbc:postgresql://caamdbinstance.ccmzrhaccii0.us-east-2.rds.amazonaws.com:5432/")
+    props.setProperty("db.user", "CaamAdmin")
+    props.setProperty("db.pass", "Encapsulateme1")
+    props.setProperty("db.jobs", "caam_job_service_db")
 
     // producer props
     props.put("bootstrap.servers","localhost:9092")
