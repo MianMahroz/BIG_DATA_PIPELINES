@@ -35,7 +35,7 @@ object DataGenerator  {
   def setUpDbIfNotExist(): Unit = {
 
     // getting list of db`s we have
-    var rs = dbConn.getMetaData().getSchemas
+    var rs = dbConn.getMetaData().getCatalogs()
     var schemaList = new util.ArrayList[String]()
 
     while (rs.next()) {

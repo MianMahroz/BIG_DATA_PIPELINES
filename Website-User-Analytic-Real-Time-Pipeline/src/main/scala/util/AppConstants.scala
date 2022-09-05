@@ -36,7 +36,7 @@ class AppConstants {
     //  props.put("value.serializer","dto.JobSummarySerializer")
 
     props.put("acks","all")
-    props.put("stats.topic","visit_stats_topic")
+    props.put("stats.topic","spark.streaming.website.visits")
 
   }
 }
