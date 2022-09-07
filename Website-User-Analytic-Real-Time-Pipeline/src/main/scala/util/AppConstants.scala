@@ -2,14 +2,19 @@ package util
 
 import java.util.Properties
 
-class AppConstants {
+class AppConstants extends Serializable{
 
+  val MARIA_DB_NAME: String = "website_stats"
   var CREATE_DB_SQL = "CREATE DATABASE "
-  var CREATE_USER_INTERACTIONS_TABLE_SQL ="" +
-    "CREATE TABLE `website_stats`.`visit_stats`" +
+
+  var VISIT_SUMMARY_STATS_TABLE_SQL ="" +
+    "CREATE TABLE `website_stats`.`visit_summary_stats`" +
     " (`ID` int(11) NOT NULL AUTO_INCREMENT, " +
-    "`INTERVAL_TIMESTAMP` DATETIME DEFAULT NULL,`LAST_ACTION` varchar(45) DEFAULT NULL," +
-    "`DURATION` int(10) DEFAULT NULL,  PRIMARY KEY (`ID`)) "
+    "`INTERVAL_TIMESTAMP` varchar(100),`LAST_ACTION` varchar(45) DEFAULT NULL," +
+    "`DURATION` varchar(100) DEFAULT NULL,  PRIMARY KEY (`ID`)) "
+
+
+
 
 
   var props = new Properties();
@@ -23,6 +28,8 @@ class AppConstants {
     props.setProperty("db.pass", "spark")
     props.setProperty("db.name", "website_stats")
     props.setProperty("db.tableName", "visit_stats")
+    props.setProperty("db.summaryTableName", "visit_stats")
+
 
 
     // producer props

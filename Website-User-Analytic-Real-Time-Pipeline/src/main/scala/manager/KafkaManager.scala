@@ -5,6 +5,8 @@ import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions.{col, from_json}
 import org.apache.spark.sql.types.{IntegerType, StringType, StructType}
 import util.AppConstants
+import org.apache.spark.sql._
+
 
 class KafkaManager (val appConstants: AppConstants){
 
@@ -24,12 +26,16 @@ class KafkaManager (val appConstants: AppConstants){
       .add("lastAction", StringType)
       .add("duration", StringType );
 
-    // As data is in binary , so we need to convert into String
-    val visitStats = df
-      .selectExpr("CAST(value as String)").as("value") // converting from byte to String
-      .select(from_json(col("value"), schema)).as("data") // collecting Json from string as per given schema
-      .select("data.*") // selecting all columns or you can specify particular col i.e data.country,data.duration etc
+    var visitStats = df
+      .selectExpr("CAST(value AS STRING) as value")
+      .select(functions.from_json(
+        functions.col("value"),schema).as("visits"))
+      .select("visits.visitDate",
+        "visits.country",
+        "visits.lastAction",
+        "visits.duration");
 
+    visitStats.printSchema()
     visitStats
   }
 }

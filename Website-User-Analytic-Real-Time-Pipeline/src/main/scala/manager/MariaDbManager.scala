@@ -4,7 +4,7 @@ import util.AppConstants
 
 import java.sql.{Connection, DriverManager, SQLException}
 
-class MariaDbManager(val appConstants: AppConstants) {
+class MariaDbManager(val appConstants: AppConstants)  extends Serializable{
 
   var mariaDbConn: Connection = null;
 
@@ -26,4 +26,19 @@ class MariaDbManager(val appConstants: AppConstants) {
     mariaDbConn.close()
     println("DB CONNECTION CLOSED!")
   }
+
+
+  //Used by StreamingAnalytics for writing data into MariaDB
+  def insertSummary(timestamp: String, lastAction: String, duration: String): Unit = {
+    try {
+      val sql = "INSERT INTO visit_summary_stats " + "(INTERVAL_TIMESTAMP, LAST_ACTION, DURATION) VALUES " + "( '" + timestamp + "'," + " '" + lastAction + "'," + duration + ")"
+      //System.out.println(sql);
+      mariaDbConn.createStatement.execute(sql)
+    } catch {
+      case e: Exception =>
+        e.printStackTrace()
+    }
+  }
+
+
 }

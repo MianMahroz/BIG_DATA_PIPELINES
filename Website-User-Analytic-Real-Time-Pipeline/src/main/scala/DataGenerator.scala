@@ -10,8 +10,8 @@ import scala.util.Random
  */
 object DataGenerator  {
 
-  val appConstants:AppConstants = new AppConstants();
-  val kafkaManager: KafkaManager = new KafkaManager(appConstants)
+  val appConstants = new AppConstants();
+  val kafkaManager = new KafkaManager(appConstants)
   val mariaDbManager = new MariaDbManager(appConstants)
   var dbConn:Connection = null
 
@@ -49,8 +49,8 @@ object DataGenerator  {
       println("WEBSITE STATS DB CREATED!")
 
 
-      // creating table to record user interactions
-      stmt.executeUpdate(appConstants.CREATE_USER_INTERACTIONS_TABLE_SQL)
+      // creating table to record visit summary by 5 second window , later will be consumes by leader dashboard
+      stmt.executeUpdate(appConstants.VISIT_SUMMARY_STATS_TABLE_SQL)
 
     }
   }
