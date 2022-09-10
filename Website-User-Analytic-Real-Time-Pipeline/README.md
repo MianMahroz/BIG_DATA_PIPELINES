@@ -1,17 +1,9 @@
-# E-Commerce-Leader-Board-Pipeline
+# WEBSITE USER ANALYTICS REAL TIME PIPELINE
 
 ### GOAL
-To create a pipeline which extracts data from client db,
-Perform data aggregation and extract stats.
-Push stats to kafka topic and dump data on which stats are generated to maria db
-
-USE CASE: 
-Client has e-commerce site on which user post ad to get any work done, i.e "Need a car driver","Need to fix my PC" etc
-Client need to know following :
-* How many ad`s posted in given duration.
-* How many ad`s are assigned to related officer to fulfil.
-* How many no fulfilled.
-* etc
+1-To collect data from from kafka regarding an ecommerce user actions w.r.t time
+2-Filter this data to generate Abandon Cart dataset and pushed to a new kafka topic for client to consume and analyze
+3-Aggregate ecommerce user actions data by 5 second window and save it to maria db for leader board consumer.
 
 ### Pre-Requisites:
 * Docker 
@@ -39,68 +31,78 @@ For windows user`s only:
 
 ### HOW TO RUN
 
-* Execute DataUploader  // you can skip this and directly read the /raw_data using spar.read.parquet("raw_data")
-* Finally, Execute Data Processor
+* Execute DataGenerator  
+* Finally, Execute KStream Listener
 
 
 ### Components:
 
-* ##### DataUploader:
-  This class is mainly responsible to upload data from client db  to common file systems for further processing.
-  Common file system can be hadoop,S3 or your local systems as we used for this example (/raw_data) is our local file system location.
+* ##### DataGenerator:
+  This class is mainly responsible to generate raw data for this example and make it available to kafka topic.
+
+      // setting up environment variables
+      appConstants.setUpConfig()
+
+      dbConn = mariaDbManager.openConnection("mysql") // giving dbName that we sure is exist , also later on used to fetch schema names
+
+      initiateGenerator()
+
+      mariaDbManager.closeDbConnection()
+     
+
+* ##### KStream Listener: 
+  This component is mainly responsible to lissen to new messages from kafka and perform operations i.e extract,transform,load
+
+   
+      System.setProperty("hadoop.home.dir", "C:\\hadoop\\")
+
+      // setting up environment variables
+      appConstants.setUpConfig()
+
+      // creating spark session
+      sparkManager.sparkCreateSession()
+
+      // Getting Data from topic
+      val rawVisitStatsDF =  sparkManager.sparkReadStreamFromTopic();
+
+      // As data is in binary , so we need to convert into String
+      val visitStatsDF = kafkaManager.convertToJson(rawVisitStatsDF)
 
 
-    // creating new Spark Session
-    sparkUtil.sparkCreateSession()
+      // Listening to new messages
+     sparkManager.sparkStartStreamingDataFrame(visitStatsDF)
 
-    // opening client DB connection
-    clientDbUtil.openPostgresDbConnection(appConstants.props.getProperty("db.jobs"))
-
-    // reading boundaries of data , to inform spark that from where it needs to start reading and where it ends
-    val dataBoundaries = clientDbUtil.readJobBoundariesFromDb(startDate,endDate)
-
-    //closing Db connection
-    clientDbUtil.closeDbConnection()
+      // Filtering Shopping Cart actions for generate abandon cart items
+      val shoppingCartStats = visitStatsDF.filter("lastAction == 'SHOPPING_CART'")
+      sparkManager.sparkWriteStreamToTopic(shoppingCartStats,"spark.streaming.carts.abandoned")
 
 
-* ##### DataProcessor: 
-  The main function of processor is to read data from file system , analyze, aggregate , generate stats and forward to kafka-topic.
+      // Create window of 5 seconds , collect , aggregate , generate summary and write to db
+      val dataSummary = sparkManager.sparkCreateDataWindow(visitStatsDF)
+      dataSummary
+        .writeStream
+        .foreach(new MariaDbWriter(mariaDbManager, dbName = appConstants.MARIA_DB_NAME)).start()  // writing summary to db for leader board consumer
 
 
-    // creating spark Session
-    sparkUtil.sparkCreateSession()
-  
-    // Reading Data from file system parquet files that are stored by job status
-    var dataset = sparkUtil.sparkReadFromFile(fileDir)
-    dataset.show()
-  
-    // Creating Local Temp Table to perform aggregation using SQL
-    // temp table was only accessible within one session
-    dataset.createOrReplaceTempView("GLOBAL_JOBS_TABLE")
-  
-    // Verifying GLOBAL_JOBS_TABLE View creation and content
-    println("Total Records available : ")
-    sparkUtil.spark.sql("SELECT count(*) FROM " + "GLOBAL_JOBS_TABLE").show()
-  
-    // Aggregating Data using SPARK SQL
-    var summary = sparkUtil.sparkAggregateJobsData(startDate,endDate)
-    println("GLOBAL_JOBS_TABLE  Summary: ")
-    summary.show()
-  
-    // Push Summary Data to a kafka topic , to be consumed by Leader Dashboard client
-    sparkUtil.sparkWriteToKafkaTopic(topicName,summary,appConstants.props)
-    println("DATA SUCCESSFULLY SEND TO KAFKA!")
-  
-    //closing spark session
-    sparkUtil.closeSparkSession()
+
+
+      // Below is to keep program going. you can also use .start().awaitTermination()
+      val latch: CountDownLatch = new CountDownLatch(1)
+      latch.await
+
+
+      // closing spark session
+       sparkManager.closeSparkSession()
 
         
- ### Kafka Drop UI SHOT
-![img.png](img.png)
- 
+![image](https://user-images.githubusercontent.com/28490692/188923697-35f1142f-3f09-4c11-88fc-4fcaf1316466.png)
 
-### DOCKER STATUS
-![img_1.png](img_1.png)
+![image](https://user-images.githubusercontent.com/28490692/188923855-680e1686-8fe3-40cb-8148-a2cdc79731c5.png)
+
+![image](https://user-images.githubusercontent.com/28490692/188923938-84b42a67-42e0-4d92-be64-2a8ad257d601.png)
+
+![image](https://user-images.githubusercontent.com/28490692/188924069-ec25e2ec-31c0-4f42-a469-07a3df088f89.png)
+
 
 
   
