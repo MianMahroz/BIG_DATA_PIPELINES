@@ -1,0 +1,5 @@
+#spring:
+#  data:
+#    mongodb:
+#      uri: mongodb+localhost://admin:admin@spring-boot-cluster.p3ezd.mongodb.net/eventlog
+#      database: eventlog
