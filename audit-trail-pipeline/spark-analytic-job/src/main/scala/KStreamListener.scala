@@ -21,6 +21,17 @@ object KStreamListener {
     // Converting Binary Data From Kafka to Json for processing
     val auditLogDF = util.convertToJson(rawDataFromKafka)
 
+
+    // To Use SparkSQL for data aggregation , creating a temp table
+    auditLogDF.createOrReplaceTempView("AUDIT_TABLE");
+
+    // Aggregate Data and push to kafka topic for Leader Board
+    val summaryDF = sparkManager.aggregateAuditLogs(auditLogDF)
+
+
+    // Dump Aggregated Data to mysql for cross reference
+
+
     // closing Session
     sparkManager.closeSparkSession()
 

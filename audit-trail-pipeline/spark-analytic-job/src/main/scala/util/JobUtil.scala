@@ -1,7 +1,7 @@
 package util
 
 import org.apache.spark.sql.{DataFrame, functions}
-import org.apache.spark.sql.types.{BooleanType, StringType, StructType}
+import org.apache.spark.sql.types.{BooleanType, IntegerType, LongType, StringType, StructType}
 
 class JobUtil {
 
@@ -27,6 +27,8 @@ class JobUtil {
     val payloadObj = new StructType()
       .add("type",StringType )
       .add("details", payloadDetailsObj)
+      .add("created_at", StringType)
+
 
     val schema = new StructType()
       .add("payload", StringType)
@@ -40,12 +42,24 @@ class JobUtil {
       .select(functions.from_json(
         functions.col("value"),schema).as("event"))
 
+
       // Payload String to JSON
       .select(functions.from_json(
-        functions.col("event.payload"),payloadObj).as("payload"))
+        functions.col("event.payload"),payloadObj).as("payload")
+      )
 
-      // Selecting Required Fields ONLY
-      .select("payload.type","payload.details");
+      /**
+       * Selecting required columns
+       * date sample received from kafka: 2022-10-31T04:18:48.889199400
+       *
+       * Use below function if need date conversion from millisecond to date
+       * functions.from_unixtime
+       */
+      .select(
+        functions.col("payload.created_at"),
+        functions.col("payload.type"),
+        functions.col("payload.details")
+      )
 
     visitStats.printSchema()
     visitStats.show(5,false)

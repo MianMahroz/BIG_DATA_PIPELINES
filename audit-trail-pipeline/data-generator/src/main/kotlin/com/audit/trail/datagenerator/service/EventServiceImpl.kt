@@ -7,6 +7,7 @@ import com.audit.trail.datagenerator.util.EventTypes
 import com.audit.trail.datagenerator.util.RawActions
 import com.audit.trail.datagenerator.util.RawScreens
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 import kotlin.random.Random
 
 
@@ -21,7 +22,8 @@ class EventServiceImpl(val eventRepo: EventRepository):EventService {
                    EventTypes.values()[Random.nextInt(5)],
                    EventDetails(RawScreens.values()[Random.nextInt(3)],
                        RawActions.values()[Random.nextInt(2)],
-                       " ${Random.nextLong()}"," ${Random.nextLong()}"))
+                       " ${Random.nextLong()}"," ${Random.nextLong(100)}"),
+                   LocalDateTime.now().plusHours(Random.nextLong(5)).toString())
            )
         }
        return "RAW DATA GENERATED SUCCESSFULLY"

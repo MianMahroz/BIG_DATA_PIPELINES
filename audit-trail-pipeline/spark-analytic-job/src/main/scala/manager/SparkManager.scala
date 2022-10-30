@@ -2,6 +2,7 @@ package manager
 
 import org.apache.spark.sql.types.{BooleanType, StringType, StructType}
 import org.apache.spark.sql.{DataFrame, ForeachWriter, Row, SparkSession, functions}
+import org.apache.spark.sql.Dataset
 
 /**
  * This class managing all operations related to spark
@@ -66,6 +67,24 @@ class SparkManager {
 
     df
   }
+
+
+  def aggregateAuditLogs(df: DataFrame): DataFrame ={
+   println("AGGREGATING AUDIT LOG DATA....")
+
+   val summaryDF = spark.sql(
+      "SELECT " +
+        "details.productId,details.name,details.action,COUNT(*) AS count" +
+        "FROM AUDIT_TABLE " +
+        "WHERE to_date(created_at)==current_date()" +
+        "GROUP BY details.productId,details.name,details.action"
+    )
+
+    summaryDF.show(5,false)
+    summaryDF
+  }
+
+
 
 
 
