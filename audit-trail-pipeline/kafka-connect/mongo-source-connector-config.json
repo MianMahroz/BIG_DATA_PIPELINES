@@ -1,0 +1,16 @@
+{
+    "name" : "mongo-source",
+    "config":{
+                "connector.class": "com.mongodb.kafka.connect.MongoSourceConnector",
+                "connection.uri": "mongodb://mongo1:27017",
+                "database": "eventlog",
+                "collection": "auditlog",
+                "topic.prefix": "mongo-01-",
+                "tasks.max":1,
+                "publish.full.document.only":"true",
+                "key.converter":"org.apache.kafka.connect.storage.StringConverter",
+		"value.converter":"org.apache.kafka.connect.json.JsonConverter",
+		"pipeline":"[{'$match': { '$and': [{'operationType': 'insert'}] } } ]"  
+                
+            }
+}
