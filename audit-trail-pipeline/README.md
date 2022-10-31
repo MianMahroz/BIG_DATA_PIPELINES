@@ -82,15 +82,15 @@ It manages below operations:
 
 
 #### connect to docker container
-docker  exec -it kafka-connect bash
-docker  exec -u 0 -it kafka-connect bash
+- docker  exec -it kafka-connect bash
+- docker  exec -u 0 -it kafka-connect bash
 
 #### view file inside docker container
-cat /etc/kafka/connect-log4j.properties view file
+- cat /etc/kafka/connect-log4j.properties view file
 
 #### Edit files inside docker container
-yum install nano
-nano /etc/kafka/connect-log4j.properties
+- yum install nano
+- nano /etc/kafka/connect-log4j.properties
 
 
 #### KAFKA DROP
