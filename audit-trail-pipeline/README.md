@@ -77,16 +77,26 @@ It manages below operations:
 ![image](https://user-images.githubusercontent.com/28490692/198993973-4c9f47f0-42bd-4718-810e-9fa67b14ca1a.png)
 
 
-#### NOTES
+
+### NOTES
+
+
+#### connect to docker container
 docker  exec -it kafka-connect bash
 docker  exec -u 0 -it kafka-connect bash
 
+#### view file inside docker container
 cat /etc/kafka/connect-log4j.properties view file
 
-edit files
+#### Edit files inside docker container
 yum install nano
 nano /etc/kafka/connect-log4j.properties
 
+
+#### KAFKA DROP
+- You can connect to kafka drop UI using http://localhost:9000/
+
+![image](https://user-images.githubusercontent.com/28490692/198994923-87ce18fa-ef7a-4334-b6a8-a83936bfad27.png)
 
 
 
