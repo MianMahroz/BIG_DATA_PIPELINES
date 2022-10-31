@@ -142,3 +142,15 @@ services:
         "sleep 10 && mongosh --host mongo1:27017 config-replica.js && sleep 10",
       ]
     restart: "no"
+
+  #Maria DB
+  mariadb:
+   container_name: mariadb
+   image: mariadb:10.5.9
+   environment:
+     - MYSQL_ROOT_PASSWORD=spark
+     - MYSQL_USER=spark
+     - MYSQL_PASSWORD=spark
+     - MYSQL_DATABASE=sparkde
+   ports:
+     - '3306:3306'

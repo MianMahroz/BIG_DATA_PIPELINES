@@ -17,7 +17,16 @@
             <artifactId>scala3-library_3</artifactId>
             <version>3.2.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.30</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>3.0.6</version>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>

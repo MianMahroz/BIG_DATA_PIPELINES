@@ -1,5 +1,6 @@
 package manager
 
+import main.scala.KStreamListener.props
 import org.apache.spark.sql.types.{BooleanType, StringType, StructType}
 import org.apache.spark.sql.{DataFrame, ForeachWriter, Row, SparkSession, functions}
 import org.apache.spark.sql.Dataset
@@ -97,8 +98,20 @@ class SparkManager {
       .option("topic",s"${LocalDate.now()}-eventlog-summary")
       .option("minPartitions",3)
       .save()
+  }
 
+  def dumpSummaryDataToMariaDb(df:DataFrame):Unit ={
+    println("Saving data to mariadb.....")
 
+    df
+      .write
+      .format("jdbc")
+      .option("url", props.getProperty("db.url"))
+      .option("dbtable", props.getProperty("db.table"))
+      .option("user", props.getProperty("db.user"))
+      .option("password", props.getProperty("db.pass"))
+      .option("driver",props.getProperty("db.driver"))
+      .save()
   }
 
 
