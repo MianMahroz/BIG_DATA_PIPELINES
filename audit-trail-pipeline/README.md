@@ -99,5 +99,12 @@ It manages below operations:
 ![image](https://user-images.githubusercontent.com/28490692/198994923-87ce18fa-ef7a-4334-b6a8-a83936bfad27.png)
 
 
+#### MONGO VIEW
+![image](https://user-images.githubusercontent.com/28490692/198996111-ad59d36d-9626-4ed1-8c8f-23e2a00163ca.png)
+
+
+#### MYSQL VIEW
+![image](https://user-images.githubusercontent.com/28490692/198996214-3b49cbd9-a686-47d2-8723-a9d8434d85ca.png)
+
 
  
