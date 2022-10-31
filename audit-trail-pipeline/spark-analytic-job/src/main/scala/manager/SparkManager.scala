@@ -4,6 +4,8 @@ import org.apache.spark.sql.types.{BooleanType, StringType, StructType}
 import org.apache.spark.sql.{DataFrame, ForeachWriter, Row, SparkSession, functions}
 import org.apache.spark.sql.Dataset
 
+import java.time.LocalDate
+
 /**
  * This class managing all operations related to spark
  */
@@ -74,16 +76,30 @@ class SparkManager {
 
    val summaryDF = spark.sql(
       "SELECT " +
-        "details.productId,details.name,details.action,COUNT(*) AS count" +
+        "details.productId,details.name,details.action,COUNT(*) AS count " +
         "FROM AUDIT_TABLE " +
-        "WHERE to_date(created_at)==current_date()" +
-        "GROUP BY details.productId,details.name,details.action"
+        "WHERE to_date(created_at)==current_date() " +
+        "GROUP BY details.productId,details.name,details.action "
     )
 
     summaryDF.show(5,false)
     summaryDF
   }
 
+  def pushSummaryDataToKafka(df:DataFrame): Unit ={
+    println("WRITING DAILY SUMMARY TO KAFKA TOPIC......")
+
+    df
+      .selectExpr("CAST(name AS STRING) AS key", "to_json(struct(*)) AS value")
+      .write
+      .format("kafka")
+      .option("kafka.bootstrap.servers","localhost:9092")
+      .option("topic",s"${LocalDate.now()}-eventlog-summary")
+      .option("minPartitions",3)
+      .save()
+
+
+  }
 
 
 

@@ -25,9 +25,11 @@ object KStreamListener {
     // To Use SparkSQL for data aggregation , creating a temp table
     auditLogDF.createOrReplaceTempView("AUDIT_TABLE");
 
-    // Aggregate Data and push to kafka topic for Leader Board
+    // Aggregate Data and extract today`s analytics
     val summaryDF = sparkManager.aggregateAuditLogs(auditLogDF)
 
+    // Push today analytics to kafka topic to be consumed by leader board
+    sparkManager.pushSummaryDataToKafka(summaryDF)
 
     // Dump Aggregated Data to mysql for cross reference
 
